@@ -7,7 +7,6 @@
 # Basic Flask functionality, importing modules for parsing results and accessing MySQL. 
 
 from flask import Flask, render_template, json, redirect, url_for
-from flask_mysqldb import MySQL
 from flask import request
 
 # Using environment variables on Flip to store our DB credentials. 
@@ -38,6 +37,5 @@ def graph():
 
 
 if __name__ == "__main__":
-    # port = int(os.environ.get('PORT', 61557))
-    # app.run(port=port, debug=True)
-    app.run()
+    port = int(os.environ.get('PORT', 5000))
+    app.run(port=port, debug=True)
