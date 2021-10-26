@@ -1,0 +1,39 @@
+<!doctype html>
+<html>
+  <head>
+    {% block head %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"> 
+    <title>{% block title %}{% endblock %} - Analytics Application </title>
+    {% endblock %}
+  </head>
+  <body>
+    <div id="header">
+      <div id="header-items" class="center">
+        <h2>Analytics</h2>
+
+        <ul id="page-select">
+          <li><a href="/">Home</a></li>
+ 
+        </ul>
+      </div>
+    </div>
+  
+    <div class="page-wrapper">
+      <div class="center">
+        <div class="center-child">
+          {% block content %}
+          {% endblock %}
+      </div>
+    </div>
+  
+   
+    <div id="footer">
+      <li><a href="https://github.com/spoonser" target="_blank" class="fa fa-github fa-lg"></a></li>
+      <li><a href="https://www.linkedin.com/in/spencer-wagner-391764158/" target="_blank" class="fa fa-linkedin fa-lg"></a></li>
+    </div>
+      
+    </div>
+  </body>
+
+</html>

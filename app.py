@@ -31,6 +31,12 @@ def index():
     return render_template('index.html')   
 
     
+@app.route('/graph')
+def graph():
+    return render_template('graph.html')   
+
+
+
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 61557))
     app.run(port=port, debug=True)
