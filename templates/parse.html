@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+{% block title %}Index{% endblock %}
+{% block head %}
+  {{ super() }}
+{% endblock %}
+{% block content %}
+	<div class="fixed-page">
+		<h1>Parse</h1>
+				
+		<form>
+			<label for="user-text">Input text here:</label><br>
+			<textarea type="text" id="user-text" name="user-text" rows="10" cols="80">
+			</textarea><br>
+			<input type="submit" value="Get Data About Text">
+			<br>---Send to text parser, when response is received, go to main page
+		</form>
+	</div>	
+
+{% endblock %}

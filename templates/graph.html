@@ -5,8 +5,15 @@
 {% endblock %}
 {% block content %}
 	<div class="fixed-page">
-		<h1>Graphs Here</h1>
-				
-	</div>	
-
+		<div class="center-content">
+			<h1>Graphs Here</h1>
+			{% if df_html %}
+			  <p> File: {{ session['filename'] }}
+				<br>
+				{{ df_html|safe }}
+			{% else %}
+				<p>No file uploaded, please return to homepage</p>
+			{% endif %}	
+		</div>	
+	</div>
 {% endblock %}

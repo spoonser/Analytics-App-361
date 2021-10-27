@@ -1,0 +1,20 @@
+{% extends "layout.html" %}
+{% block title %}Index{% endblock %}
+{% block head %}
+  {{ super() }}
+{% endblock %}
+{% block content %}
+	<div class="fixed-page">
+		<h1>Stats Here</h1>
+
+		<p> File: {{ session['filename'] }}
+		<br>
+		{% if df_html %}
+			{{ df_html|safe }}
+		{% else %}
+			<p>no file uploaded, please return to homepage</p>
+		{% endif %}	
+
+	</div>	
+
+{% endblock %}

@@ -5,8 +5,52 @@
 {% endblock %}
 {% block content %}
 	<div class="fixed-page">
-		<h1>Welcome!</h1>
-				
+		<h1>Main</h1>
+
+		<h2>Upload Files</h2>
+		<div id="upload-box">
+			<form id='user-file-form' method="POST" enctype=multipart/form-data>
+				<input type="file" id="user-file" name="user-file" accept=".csv">
+				<input type="submit">
+				Upload .csv formatted data
+			</form>
+		</div>
+
+		<br><br>
+		<div class="center-content">
+			{% if session['data'] %}
+				<h3>File Successfully Uploaded</h3>
+				<p>File: {{ session['filename'] }}</p>
+			{% else %}	
+				<p>No file uploaded</p>
+			{% endif %}
+			
+			{% if session['data'] %}
+				<br>
+				<form action="{{ url_for('graph') }}">
+					<input type="submit" value="Make Graphs with Your Data"/>		
+				</form>
+
+				<br>
+				<form action="{{ url_for('stats') }}">
+
+					<input type="submit" value="Stats!"/>
+				</form>	
+			{% endif %}
+		</div>
+
+
+		<br><br>
+		<div id="index-parse">
+			<h2>Microservice Interaction</h2>
+			<form action="{{ url_for('parse') }}">
+				<input type="submit" value="Text Analytics"/>
+				Input text data and see analytics
+			</form>
+			<br> Note: When the file is submitted, the website will retain that data
+		</div>
+
+
 	</div>	
 
 {% endblock %}
