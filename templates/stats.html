@@ -5,12 +5,52 @@
 {% endblock %}
 {% block content %}
 	<div class="fixed-page">
-		<h1>Stats Here</h1>
+		<h1>Statistics</h1>
 
 		<p> File: {{ session['filename'] }}
 		<br>
 		{% if df_html %}
 			{{ df_html|safe }}
+			
+		<!-- Statistics selections  -->
+		<br><br>
+		<div id="basic-stats">
+			<form id="three-m" method="POST">
+				<legend>Basic Stats</legend>
+				<select name="stat-col" id="stat-col"> 
+					<option disable selected value=None> -- Select Column -- </option>
+					{% for key in session['data'] %}
+					<option value="{{ key }}">{{ key }} </option>
+					{% endfor %}	
+				</select> Choose column to get statistics on
+				
+				<br><br>
+				<b>Select statistical values</b> <br>
+				<input type="checkbox" id="mean" name="mean" value="Mean"> Mean<br>
+				<input type="checkbox" id="median" name="median" value="Median"> Median<br>
+				<input type="checkbox" id="mode" name="mode" value="mode"> Mode<br>
+				<input type="checkbox" id="stddev" name="stddev" value="stddev"> Standard Deviation<br>
+				
+				<br><br>
+				<input type="submit" id="form1-submit"value="Get Selected Stats for Column">
+			</form>
+		</div>
+	
+		<br><br><br>
+		<div id="adv-stats">
+				<form id="adv-TBD">
+				<legend>Advanced Stats</legend>
+				<select name="stat-col" id="stat-col">
+					<option disable selected value=None> -- Select Stats -- </option>
+					{% for key in session['data'] %}
+					<option value="{{ key }}">{{ key }} </option>
+					{% endfor %}	
+				</select>
+				<input type="submit" id="form1-submit"value="Get Advanced Stats">
+			</form>
+
+		</div>
+
 		{% else %}
 			<p>no file uploaded, please return to homepage</p>
 		{% endif %}	

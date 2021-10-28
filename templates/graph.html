@@ -6,11 +6,75 @@
 {% block content %}
 	<div class="fixed-page">
 		<div class="center-content">
-			<h1>Graphs Here</h1>
+			<h1>Graphing</h1>
 			{% if df_html %}
-			  <p> File: {{ session['filename'] }}
+			  <p> File: {{ session['filename'] }} </p>
 				<br>
 				{{ df_html|safe }}
+
+			<!-- Graph selection  -->
+			<div>
+				<br>
+				<form class="input-form" id="graph-create-form" name="graph-create-form" method="POST">
+						<fieldset>
+							<legend>Generate a Graph</legend>
+								<select name="graph-type" id="graph-type">
+									<option disable selected value=None>-- Select Graph Type --</option>
+									<option value="scatter">Scatter</option>
+									<option value="line">Line</option>
+									<option value="bar">Bar</option>
+								</select>
+								Select graph type
+
+							<br><br>
+									<select name="x-axis" id="x-axis">
+										<option disable selected value=None> --Select X-Axis -- </option>
+										{% for key in session['data'] %}
+										<option value="{{ key }}">{{ key }} </option>
+										{% endfor %}		
+									</select>
+									Select X-Axis
+
+							<br><br>
+									<select name="y-axis" id="y-axis">
+										<option disable selected value=None> --Select Y-Axis -- </option>
+										{% for key in session['data'] %}
+										<option value="{{ key }}">{{ key }} </option>
+										{% endfor %}
+									</select>
+									Select Y-Axis
+
+								<br><br>
+								<input type="submit" value="Generate Graph">
+						</fieldset>
+				</form>
+			</div>			
+
+<!-- 
+			{% if graph_clicked %}
+			<!-- Modal -->
+			<div class="modal fade" id="myModal" role="dialog">
+				<div class="modal-dialog">
+	
+					<!-- Modal content-->
+					<div class="modal-content">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal">&times;</button>
+							<h4 class="modal-title">Modal Header</h4>
+						</div>
+						<div class="modal-body">
+							{{ plot }}
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			{% endif %}
+
+ -->
+
 			{% else %}
 				<p>No file uploaded, please return to homepage</p>
 			{% endif %}	
