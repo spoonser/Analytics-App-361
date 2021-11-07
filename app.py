@@ -19,7 +19,7 @@ import os
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
-app.secret_key = os.urandom(28)
+app.secret_key = "NOT_A_SECRET" 
 
 # -------------------------------------------------------------------------------------------------
 # Main Index page 
