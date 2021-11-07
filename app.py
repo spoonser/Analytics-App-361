@@ -19,7 +19,6 @@ import os
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
-server = app.server()
 app.secret_key = os.urandom(28)
 
 # -------------------------------------------------------------------------------------------------
