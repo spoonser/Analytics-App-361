@@ -7,7 +7,9 @@
 # Basic Flask functionality, importing modules for parsing results and accessing MySQL. 
 
 from flask import Flask, render_template, request, flash, redirect, url_for, session
+import static.py.graphing as grph
 import matplotlib.pyplot as plt
+import matplotlib as mpl
 import numpy as np
 import pandas as pd
 import io
@@ -61,19 +63,11 @@ def get_text_data():
     df = pd.DataFrame({'c1':['apple','banana','orange'],'c2':[10, 34, 22]})
     session['filename'] = 'Text Data from Microservice'
     session['data'] = df.to_dict('list')
-    # Plot figure
-    img = io.BytesIO()
 
-    df.plot(kind='bar', x='c1', y='c2', rot=0)
-    plt.xlabel('')
-    plt.ylabel('Word Frequency')
-    plt.legend('')
-    plt.savefig(img, format='png')
-    img.seek(0)
-
-    plot_url = base64.b64encode(img.getvalue()).decode()
-    plot = '<img src="data:image/png;base64,{}">'.format(plot_url)
-    
+    # Plot figure    
+    plot = grph.get_plot('bar', df, None, 'Word', 
+                        'Frequency', 'Word Frequency Diagram')
+ 
     return plot
  
 # -------------------------------------------------------------------------------------------------
@@ -104,17 +98,11 @@ def do_plot():
     x_axis = request.form.get('x-axis') or None
     y_axis = request.form.get('y-axis') or None
 
-    # Attempt to pass the user selection to matplotlib
+    # Attempt to pass the user selection to graphing functions
     try:
-         # Plot figure
-        img = io.BytesIO()
-
-        df.plot(kind=graph_type, x=x_axis, y=y_axis, rot=0)
-        plt.savefig(img, format='png')
-        img.seek(0)
-
-        plot_url = base64.b64encode(img.getvalue()).decode()
-        plot = '<img src="data:image/png;base64,{}">'.format(plot_url)
+        # Plot figure
+        plot = grph.get_plot(graph_type, df, None, '',
+                            '', '')
 
         return plot
 
@@ -193,11 +181,11 @@ def http_graphs():
 
         # Get colorscheme and apply to graph
 
-
-        # Create graph given specifications
-        df.plot(kind=graph_type, x=x_axis, y=y_axis, rot=0)
+        # Create plot given specifications
+        df.plot(kind='bar', x='c1', y='c2', rot=0)
+        plt.xlabel('')
+        plt.legend('')
         plt.savefig(img, format='png')
-        img.seek(0)
 
         # Encode png in a 64 bit string
         plot_url = base64.b64encode(img.getvalue()).decode()
