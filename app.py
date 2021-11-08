@@ -178,6 +178,36 @@ def get_stats():
     
     return 'hello'
 
+# -------------------------------------------------------------------------------------------------
+# Microservice portion - return a graph to external application sending POST request
+# -------------------------------------------------------------------------------------------------
+@app.route('/graphs_ms', methods=['POST'])
+def http_graphs():
+    if request.method == 'POST':
+        data = request.get_json()
+        color = data['color_map']
+        graph_type = data['graph_type']
+        table = data['table']
+
+        df = pd.read_json(table, orient='split')
+
+        # Get colorscheme and apply to graph
+
+
+        # Create graph given specifications
+        df.plot(kind=graph_type, x=x_axis, y=y_axis, rot=0)
+        plt.savefig(img, format='png')
+        img.seek(0)
+
+        # Encode png in a 64 bit string
+        plot_url = base64.b64encode(img.getvalue()).decode()
+        plot = '<img src="data:image/png;base64,{}">'.format(plot_url)
+
+        # Send response to requestor
+
+    pass
+
+
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port, debug=True)
