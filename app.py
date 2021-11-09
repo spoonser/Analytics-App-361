@@ -9,7 +9,7 @@
 from flask import Flask, render_template, request, flash, redirect, url_for, session
 import static.py.graphing as grph
 import matplotlib.pyplot as plt
-import matplotlib as mpl
+from matplotlib import cm
 import numpy as np
 import pandas as pd
 import io
@@ -60,13 +60,13 @@ def parse():
 # Send request to external api and return a graph of word stats
 @app.route('/parse', methods=['POST'])
 def get_text_data():
-    df = pd.DataFrame({'c1':['apple','banana','orange'],'c2':[10, 34, 22]})
+    df = pd.DataFrame({'c1':['apple','banana','orange', 'dragonfruit'],'c2':[10, 34, 22, 36]})
     session['filename'] = 'Text Data from Microservice'
     session['data'] = df.to_dict('list')
 
     # Plot figure    
-    plot = grph.get_plot('bar', df, None, 'Word', 
-                        'Frequency', 'Word Frequency Diagram')
+    plot = grph.get_plot('bar', df, 'Purples', df.keys()[0], df.keys()[1], 
+                        'Word', 'Frequency', 'Word Frequency Diagram')
  
     return plot
  
@@ -95,14 +95,14 @@ def do_plot():
 
     # Get user selection
     graph_type = request.form.get('graph-type')
-    x_axis = request.form.get('x-axis') or None
-    y_axis = request.form.get('y-axis') or None
+    xaxis = request.form.get('x-axis') or None
+    yaxis = request.form.get('y-axis') or None
 
     # Attempt to pass the user selection to graphing functions
     try:
         # Plot figure
-        plot = grph.get_plot(graph_type, df, None, '',
-                            '', '')
+        plot = grph.get_plot(graph_type, df, 'Greys', xaxis, yaxis, 
+                            '', '', '')
 
         return plot
 
@@ -169,31 +169,30 @@ def get_stats():
 # -------------------------------------------------------------------------------------------------
 # Microservice portion - return a graph to external application sending POST request
 # -------------------------------------------------------------------------------------------------
-@app.route('/graphs_ms', methods=['POST'])
+@app.route('/graphs_ms', methods=['POST', 'GET'])
 def http_graphs():
     if request.method == 'POST':
+        # Get specifications from user
         data = request.get_json()
-        color = data['color_map']
+        colors = data['colors']
         graph_type = data['graph_type']
-        table = data['table']
+        xaxis, yaxis = data['xaxis'], data['yaxis']
+        xlabel, ylabel = data['xlabel'], data['ylabel']
 
+        # Convert JSON data to dataframe
+        table = data['table']
         df = pd.read_json(table, orient='split')
 
-        # Get colorscheme and apply to graph
-
         # Create plot given specifications
-        df.plot(kind='bar', x='c1', y='c2', rot=0)
-        plt.xlabel('')
-        plt.legend('')
-        plt.savefig(img, format='png')
-
-        # Encode png in a 64 bit string
-        plot_url = base64.b64encode(img.getvalue()).decode()
-        plot = '<img src="data:image/png;base64,{}">'.format(plot_url)
+        plot = grph.get_plot(graph_type, df, colors, xaxis, yaxis, 
+                            '', '', '')
 
         # Send response to requestor
-
-    pass
+        return plot
+    
+    # Send user back to homepage if they access via GET
+    else:
+        return redirect('/')
 
 
 if __name__ == "__main__":
