@@ -6,7 +6,7 @@
 
 # Basic Flask functionality, importing modules for parsing results and accessing MySQL. 
 
-from flask import Flask, render_template, request, flash, redirect, url_for, session
+from flask import Flask, render_template, request, json, flash, redirect, url_for, session
 import static.py.graphing as grph
 import matplotlib.pyplot as plt
 from matplotlib import cm
@@ -192,11 +192,23 @@ def http_graphs():
             plot = grph.get_plot(graph_type, df, colors, xaxis, yaxis,
                                 xlabel, ylabel, title)
 
+            # Make response
+            response = app.response_class(
+                response=json.dumps(plot),
+                status=200,
+                mimetype='text/plain; charset=utf-8'
+            )
+
             # Send response to requestor
-            return plot
+            return response
 
         except:
-            raise Exception('Improperly formatted data')
+            # Return bad response
+            response = app.response_class(
+                response='Invalid request',
+                status=400,
+            )
+            return response
 
     # Send user back to homepage if they access via GET
     else:
