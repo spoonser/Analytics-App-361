@@ -7,6 +7,7 @@
 # Basic Flask functionality, importing modules for parsing results and accessing MySQL. 
 
 from flask import Flask, render_template, request, json, flash, redirect, url_for, session
+import requests
 import static.py.graphing as grph
 import matplotlib.pyplot as plt
 from matplotlib import cm
@@ -59,16 +60,45 @@ def parse():
 # Send request to external api and return a graph of word stats
 @app.route('/parse', methods=['POST'])
 def get_text_data():
-    df = pd.DataFrame({'c1':['apple','banana','orange', 'dragonfruit'],'c2':[10, 34, 22, 36]})
-    session['filename'] = 'Text Data from Microservice'
-    session['data'] = df.to_dict('list')
+    text = request.form['user-text']
+    
+    
+    url = "https://cs361-somerfis-serve.uw.r.appspot.com/pos"
+    payload = { "text": text }
 
-    # Plot figure    
-    plot_url = grph.get_plot('bar', df, 'Purples', df.keys()[0], df.keys()[1], 
-                        'Word', 'Frequency', 'Word Frequency Diagram') 
-    plot = '<img src="data:image/png;base64,{}">'.format(plot_url)
+    response = requests.post(url, data=json.dumps(payload))
+    
+    if response.status_code == 200:
+        try:
+            # Get parsed information about text
+            parsed_text = json.loads(response.text)
 
-    return plot
+            # Reorganize parsed text to make a graph
+            del parsed_text['count']
+
+            word_freq = {}
+            word_freq['c1'] = []
+            word_freq['c2'] = []
+            for key in parsed_text.keys():
+                word_freq['c1'].append(key)
+                word_freq['c2'].append(len(parsed_text[key]))
+
+            df = pd.DataFrame(word_freq)
+            session['filename'] = 'Text Data from Microservice'
+            session['data'] = df.to_dict('list')
+
+            # Plot and return figure   
+            plot_url = grph.get_plot('pie', df, 'Blues', df.keys()[0], df.keys()[1], 
+                                    'Word', 'Frequency', 'Word Frequency Diagram') 
+            plot = '<img src="data:image/png;base64,{}">'.format(plot_url)
+
+            return plot
+    
+        except:        
+            return "Text could not be analyzed. Sorry."
+
+    else:
+        return "Something went wrong. Sorry."
  
 
 # -------------------------------------------------------------------------------------------------
@@ -196,7 +226,7 @@ def http_graphs():
             response = app.response_class(
                 response=json.dumps(plot),
                 status=200,
-                mimetype='text/plain; charset=utf-8'
+                mimetype='application/json'
             )
 
             # Send response to requestor
