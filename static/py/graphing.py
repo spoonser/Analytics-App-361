@@ -32,9 +32,8 @@ def bar_plot(data, colors, xaxis, yaxis, xlabel='', ylabel='', title=''):
 	img.seek(0)
 
 	plot_url = base64.b64encode(img.getvalue()).decode()	
-	plot = '<img src="data:image/png;base64,{}">'.format(plot_url)
 
-	return plot
+	return plot_url
 
 
 def line_plot(data, colors, xaxis, yaxis, xlabel='', ylabel='', title=''):
@@ -52,9 +51,8 @@ def line_plot(data, colors, xaxis, yaxis, xlabel='', ylabel='', title=''):
 	img.seek(0)
 
 	plot_url = base64.b64encode(img.getvalue()).decode()	
-	plot = '<img src="data:image/png;base64,{}">'.format(plot_url)
 
-	return plot
+	return plot_url
 
 
 def scatter_plot(data, colors, xaxis, yaxis, xlabel='', ylabel='', title=''):
@@ -72,9 +70,8 @@ def scatter_plot(data, colors, xaxis, yaxis, xlabel='', ylabel='', title=''):
 	img.seek(0)
 
 	plot_url = base64.b64encode(img.getvalue()).decode()	
-	plot = '<img src="data:image/png;base64,{}">'.format(plot_url)
 
-	return plot
+	return plot_url
 
 
 def pie_plot(data, colors, xaxis, yaxis, xlabel='', ylabel='', title=''):
@@ -82,20 +79,22 @@ def pie_plot(data, colors, xaxis, yaxis, xlabel='', ylabel='', title=''):
 	img = io.BytesIO()
 
 	cmap = cm.get_cmap(colors)(np.linspace(0.2, 0.7, len(data)))
+	labels = ['']*len(data)
 
 	data.set_index(xaxis, inplace=True)
-	print(data.loc[:, data.keys()[0]])
-	data.plot.pie(y=yaxis, colors=cmap)
+	
+	data.plot.pie(y=yaxis, autopct='%.0f', labels=labels, colors=cmap)
 	plt.xlabel('')
 	plt.ylabel('')
+	plt.legend(loc=3, labels=data.index)
 	plt.title(title)
 	plt.savefig(img, format='png')
 	img.seek(0)
 
-	plot_url = base64.b64encode(img.getvalue()).decode()	
-	plot = '<img src="data:image/png;base64,{}">'.format(plot_url)
+	# Encodes png graph as 64 bit image
+	plot_url = base64.b64encode(img.getvalue()).decode()
 
-	return plot
+	return plot_url
 
 
 # ***************************************************************************

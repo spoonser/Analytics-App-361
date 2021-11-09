@@ -23,6 +23,7 @@ from werkzeug.utils import secure_filename
 app = Flask(__name__)
 app.secret_key = "NOT_A_SECRET" 
 
+
 # -------------------------------------------------------------------------------------------------
 # Main Index page 
 # -------------------------------------------------------------------------------------------------
@@ -48,8 +49,6 @@ def upload_file():
         return index()
 
 
-
- 
 # -------------------------------------------------------------------------------------------------
 # Text Parsing page - Microservice connectivity 
 # -------------------------------------------------------------------------------------------------
@@ -65,11 +64,13 @@ def get_text_data():
     session['data'] = df.to_dict('list')
 
     # Plot figure    
-    plot = grph.get_plot('bar', df, 'Purples', df.keys()[0], df.keys()[1], 
-                        'Word', 'Frequency', 'Word Frequency Diagram')
- 
+    plot_url = grph.get_plot('bar', df, 'Purples', df.keys()[0], df.keys()[1], 
+                        'Word', 'Frequency', 'Word Frequency Diagram') 
+    plot = '<img src="data:image/png;base64,{}">'.format(plot_url)
+
     return plot
  
+
 # -------------------------------------------------------------------------------------------------
 # Graphing page - create graphs with uploaded data
 # ------------------------------------------------------------------------------------------------- 
@@ -101,8 +102,9 @@ def do_plot():
     # Attempt to pass the user selection to graphing functions
     try:
         # Plot figure
-        plot = grph.get_plot(graph_type, df, 'Greys', xaxis, yaxis, 
+        plot_url = grph.get_plot(graph_type, df, 'Greys', xaxis, yaxis, 
                             '', '', '')
+        plot = '<img src="data:image/png;base64,{}">'.format(plot_url)
 
         return plot
 
@@ -172,24 +174,30 @@ def get_stats():
 @app.route('/graphs_ms', methods=['POST', 'GET'])
 def http_graphs():
     if request.method == 'POST':
-        # Get specifications from user
-        data = request.get_json()
-        colors = data['colors']
-        graph_type = data['graph_type']
-        xaxis, yaxis = data['xaxis'], data['yaxis']
-        xlabel, ylabel = data['xlabel'], data['ylabel']
 
-        # Convert JSON data to dataframe
-        table = data['table']
-        df = pd.read_json(table, orient='split')
-
-        # Create plot given specifications
-        plot = grph.get_plot(graph_type, df, colors, xaxis, yaxis, 
-                            '', '', '')
-
-        # Send response to requestor
-        return plot
+        try:
+            # Get specifications from user
+            data = request.get_json()
+            colors = data['colors']
+            graph_type = data['graph_type']
+            xaxis, yaxis = data['xaxis'], data['yaxis']
+            xlabel, ylabel = data['xlabel'], data['ylabel']
+            title = data['title']
     
+            # Convert JSON data to dataframe
+            table = pd.io.json.json_normalize(data['table'])
+            df = pd.DataFrame(table)
+
+            # Create plot given specifications
+            plot = grph.get_plot(graph_type, df, colors, xaxis, yaxis,
+                                xlabel, ylabel, title)
+
+            # Send response to requestor
+            return plot
+
+        except:
+            raise Exception('Improperly formatted data')
+
     # Send user back to homepage if they access via GET
     else:
         return redirect('/')
