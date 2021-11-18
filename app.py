@@ -63,7 +63,7 @@ def get_text_data():
     text = request.form['user-text']
     
     
-    url = "https://cs361-somerfis-serve.uw.r.appspot.com/pos"
+    url = "https://cs361-parsely-rjg4g6kr7q-uw.a.run.app/pos"
     payload = { "text": text }
 
     response = requests.post(url, data=json.dumps(payload))
