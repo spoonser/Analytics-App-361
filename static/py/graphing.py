@@ -25,9 +25,13 @@ def bar_plot(data, colors, xaxis, yaxis, xlabel='', ylabel='', title=''):
 	cmap = cm.get_cmap(colors)(np.linspace(0.2, 0.7, len(data)))
 
 	data.plot(kind='bar', x=xaxis, y=yaxis, legend=False, color=cmap, rot=0)
+
+	# Plot formatting
+	if xlabel:
+		plt.subplots_adjust(bottom=0.15)
+	plt.title(title)
 	plt.xlabel(xlabel)
 	plt.ylabel(ylabel)
-	plt.title(title)
 	plt.savefig(img, format='png')
 	img.seek(0)
 
@@ -43,9 +47,13 @@ def line_plot(data, colors, xaxis, yaxis, xlabel='', ylabel='', title=''):
 	cmap = cm.get_cmap(colors)(np.linspace(0.2, 0.7, len(data)))
 
 	data.plot(kind='line', x=xaxis, y=yaxis, legend=False, color=cmap, rot=0)
+	
+	# Plot formatting
+	if xlabel:
+		plt.subplots_adjust(bottom=0.15)
+	plt.title(title)
 	plt.xlabel(xlabel)
 	plt.ylabel(ylabel)
-	plt.title(title)
 	plt.legend('')
 	plt.savefig(img, format='png')
 	img.seek(0)
@@ -72,9 +80,12 @@ def scatter_plot(data, colors, xaxis, yaxis, xlabel='', ylabel='', title=''):
 	else:	
 		data.plot.scatter(xaxis, yaxis, legend=False, s=120, c=cmap, rot=30)
 
+	# Plot formatting
+	if xlabel:
+		plt.subplots_adjust(bottom=0.15)
+	plt.title(title)
 	plt.xlabel(xlabel)
 	plt.ylabel(ylabel)
-	plt.title(title)
 	plt.legend('')
 	plt.savefig(img, format='png')
 	img.seek(0)
