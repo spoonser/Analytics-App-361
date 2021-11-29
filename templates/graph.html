@@ -44,6 +44,14 @@
 									</select>
 									Select Y-Axis
 
+							<br><br>
+									<select name="color-scheme" id="color-scheme">
+										<option disable selected value=None> --Select Color-Scheme -- </option>
+										{% for cmap_id in cmaps %}
+										<option value="{{ cmap_id }}">{{ cmap_id }} </option>
+										{% endfor %}
+									</select>
+									Select Color Scheme
 								<br><br>
 								<input type="submit" value="Generate Graph">
 
@@ -66,7 +74,6 @@
 						</div>
 						<div class="modal-footer">
 							<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-							<a download="plot.png" href={{plot}}>Download</a>
 						</div>
 					</div>
 				</div>

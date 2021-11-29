@@ -84,8 +84,6 @@ def get_text_data():
                 word_freq['c2'].append(len(parsed_text[key]))
 
             df = pd.DataFrame(word_freq)
-            session['filename'] = 'Text Data from Microservice'
-            session['data'] = df.to_dict('list')
 
             # Plot and return figure   
             plot_url = grph.get_plot('pie', df, 'Blues', df.keys()[0], df.keys()[1], 
@@ -110,7 +108,7 @@ def graph():
     if 'data' in session:
         df = pd.DataFrame(session['data'])
         df_html = df.to_html()
-        return render_template('graph.html', df_html=df_html)
+        return render_template('graph.html', df_html=df_html, cmaps=plt.colormaps())
 
     return render_template('graph.html', df_html=False)
 
@@ -129,15 +127,17 @@ def do_plot():
     graph_type = request.form.get('graph-type')
     xaxis = request.form.get('x-axis') or None
     yaxis = request.form.get('y-axis') or None
+    color = request.form.get('color-scheme') or 'Greys'
 
     # Attempt to pass the user selection to graphing functions
     try:
         # Plot figure
-        plot_url = grph.get_plot(graph_type, df, 'Greys', xaxis, yaxis, 
+        plot_url = grph.get_plot(graph_type, df, color, xaxis, yaxis, 
                             '', '', '')
         plot = '<img class="img-responsive" src="data:image/png;base64,{}">'.format(plot_url)
-
-        return render_template('graph.html', df_html=df_html, graph_requested=True, plot=plot)
+    
+        return render_template('graph.html', df_html=df_html, plot=plot,
+                                cmaps=plt.colormaps(), graph_requested=True)
 
     # Graph doesn't work
     except:
@@ -161,6 +161,7 @@ def stats():
 def get_stats():
     # Get session data in pandas dataframe
     df = pd.DataFrame(session['data'])
+    df_html = df.to_html()
 
     # Mean, median, and mode standard deviation form 
     if 'stat-col' in request.form:
@@ -171,27 +172,27 @@ def get_stats():
             try:
                 mean = df[col].mean(axis=0)
             except:
-                mean = 'Mean not calculable'
+                mean = 'Not calculable'
         
         if request.form.get('median'):
             try:
                 median = df[col].median(axis=0)
             except:
-                median = 'Median not calculable'
+                median = 'Not calculable'
 
         if request.form.get('mode'):
             try:
                 mode = df[col].mode(axis=0)
             except:
-                mode = 'Mode not calculable'
+                mode = 'Not calculable'
 
         if request.form.get('stddev'):
             try:
                 stddev = df[col].std(axis=0)
             except:
-                stddev = 'Standard deviation not calculable'
+                stddev = 'Not calculable'
 
-        return render_template('stats.html', stats_requested=True, 
+        return render_template('stats.html', stats_requested=True, df_html=df_html,
                                 mean=mean, median=median, mode=mode, stddev=stddev)
 
     # To implement
