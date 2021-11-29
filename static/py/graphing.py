@@ -67,10 +67,10 @@ def scatter_plot(data, colors, xaxis, yaxis, xlabel='', ylabel='', title=''):
 		plt.scatter(ticks, data[yaxis], s=120, c=cmap)
 		ax = plt.gca()
 		ax.legend_ = None
-		plt.xticks(ticks, data[xaxis])
+		plt.xticks(ticks, data[xaxis], rotation=30)
 
 	else:	
-		data.plot.scatter(xaxis, yaxis, legend=False, s=120, c=cmap)
+		data.plot.scatter(xaxis, yaxis, legend=False, s=120, c=cmap, rot=30)
 
 	plt.xlabel(xlabel)
 	plt.ylabel(ylabel)

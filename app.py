@@ -90,9 +90,9 @@ def get_text_data():
             # Plot and return figure   
             plot_url = grph.get_plot('pie', df, 'Blues', df.keys()[0], df.keys()[1], 
                                     'Word', 'Frequency', 'Word Frequency Diagram') 
-            plot = '<img src="data:image/png;base64,{}">'.format(plot_url)
+            plot = '<img class="img-responsive" src="data:image/png;base64,{}">'.format(plot_url)
 
-            return plot
+            return render_template("parse.html", graph_requested=True, plot=plot)
     
         except:        
             return "Text could not be analyzed. Sorry."
@@ -123,6 +123,7 @@ def do_plot():
     """
     # Get current session data as pandas dataframe
     df = pd.DataFrame(session['data'])
+    df_html = df.to_html()
 
     # Get user selection
     graph_type = request.form.get('graph-type')
@@ -134,9 +135,9 @@ def do_plot():
         # Plot figure
         plot_url = grph.get_plot(graph_type, df, 'Greys', xaxis, yaxis, 
                             '', '', '')
-        plot = '<img src="data:image/png;base64,{}">'.format(plot_url)
+        plot = '<img class="img-responsive" src="data:image/png;base64,{}">'.format(plot_url)
 
-        return plot
+        return render_template('graph.html', df_html=df_html, graph_requested=True, plot=plot)
 
     # Graph doesn't work
     except:
@@ -190,7 +191,8 @@ def get_stats():
             except:
                 stddev = 'Standard deviation not calculable'
 
-        return 'mean, median, mode'
+        return render_template('stats.html', stats_requested=True, 
+                                mean=mean, median=median, mode=mode, stddev=stddev)
 
     # To implement
     if 'form2-submit' in request.form:

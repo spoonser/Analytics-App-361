@@ -13,7 +13,35 @@
 			<input type="submit" value="Get Data About Text">
 		</form>
 
-		<br>---Send to text parser, when response is received, go to graphs page --
+		<!-- Modal for displaying graph -->
+		<div id="graph-modal" class="modal" tabindex="-1" role="dialog">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">Your Graph</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						{{ plot | safe }}
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+						<a download="plot.png" href={{plot}}>Download</a>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- JQuery to call open the modal when the graph is created  -->
+		<script>
+		{% if graph_requested %}
+			$(document).ready(function(){
+				$("#graph-modal").modal('show');
+			});
+		{% endif %}
+		</script>
 	</div>	
 
 {% endblock %}

@@ -46,34 +46,40 @@
 
 								<br><br>
 								<input type="submit" value="Generate Graph">
+
 						</fieldset>
 				</form>
 			</div>			
 
-<!-- 
-			{% if graph_clicked %}
-			<!-- Modal -->
-			<div class="modal fade" id="myModal" role="dialog">
-				<div class="modal-dialog">
-	
-					<!-- Modal content-->
+			<!-- Modal for displaying graph -->
+			<div id="graph-modal" class="modal" tabindex="-1" role="dialog">
+				<div class="modal-dialog" role="document">
 					<div class="modal-content">
 						<div class="modal-header">
-							<button type="button" class="close" data-dismiss="modal">&times;</button>
-							<h4 class="modal-title">Modal Header</h4>
+							<h5 class="modal-title">Your Graph</h5>
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
 						</div>
 						<div class="modal-body">
-							{{ plot }}
+							{{ plot | safe }}
 						</div>
 						<div class="modal-footer">
-							<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+							<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+							<a download="plot.png" href={{plot}}>Download</a>
 						</div>
 					</div>
 				</div>
 			</div>
-			{% endif %}
 
- -->
+			<!-- JQuery to call open the modal when the graph is created  -->
+			<script>
+			{% if graph_requested %}
+				$(document).ready(function(){
+					$("#graph-modal").modal('show');
+				});
+			{% endif %}
+			</script>
 
 			{% else %}
 				<p>No file uploaded, please return to homepage</p>
