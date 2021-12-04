@@ -18,7 +18,11 @@
 				<form class="input-form" id="graph-create-form" name="graph-create-form" method="POST">
 						<fieldset>
 							<legend>Generate a Graph</legend>
-								<select name="graph-type" id="graph-type">
+								Graph Title:<br>
+								<input type="text" id="title" name="title" placeholder="Input graph title">
+
+								<br><br>
+								<select name="graph_type" id="graph_type">
 									<option disable selected value=None>-- Select Graph Type --</option>
 									<option value="scatter">Scatter</option>
 									<option value="line">Line</option>
@@ -26,33 +30,39 @@
 								</select>
 								Select graph type
 
+							
 							<br><br>
-									<select name="x-axis" id="x-axis">
+									<select name="xaxis" id="xaxis">
 										<option disable selected value=None> --Select X-Axis -- </option>
 										{% for key in session['data'] %}
 										<option value="{{ key }}">{{ key }} </option>
 										{% endfor %}		
 									</select>
 									Select X-Axis
-
+									<br>
+									<input type="text" id="xlabel" name="xlabel" placeholder="Input x-axis title">
+											
 							<br><br>
-									<select name="y-axis" id="y-axis">
+									<select name="yaxis" id="yaxis">
 										<option disable selected value=None> --Select Y-Axis -- </option>
 										{% for key in session['data'] %}
 										<option value="{{ key }}">{{ key }} </option>
 										{% endfor %}
 									</select>
 									Select Y-Axis
-
-							<br><br>
-									<select name="color-scheme" id="color-scheme">
-										<option disable selected value=None> --Select Color-Scheme -- </option>
+									<br>
+									<input type="text" id="ylabel" name="ylabel" placeholder="Input y-axis title">
+							
+									<br><br>
+									<select name="colors" id="colors">
+										<option disable selected value=None> --Select Color Scheme -- </option>
 										{% for cmap_id in cmaps %}
 										<option value="{{ cmap_id }}">{{ cmap_id }} </option>
 										{% endfor %}
 									</select>
 									Select Color Scheme
-								<br><br>
+								<br><br>		
+			
 								<input type="submit" value="Generate Graph">
 
 						</fieldset>

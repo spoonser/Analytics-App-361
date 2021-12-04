@@ -9,6 +9,7 @@
 from flask import Flask, render_template, request, json, flash, redirect, url_for, session
 import requests
 import static.py.graphing as grph
+import static.py.stats as stat
 import matplotlib.pyplot as plt
 from matplotlib import cm
 import numpy as np
@@ -60,9 +61,8 @@ def parse():
 # Send request to external api and return a graph of word stats
 @app.route('/parse', methods=['POST'])
 def get_text_data():
-    text = request.form['user-text']
-    
-    
+    # Ready information to send to target microservice
+    text = request.form['user-text'] 
     url = "https://cs361-parsely-rjg4g6kr7q-uw.a.run.app/pos"
     payload = { "text": text }
 
@@ -76,27 +76,26 @@ def get_text_data():
             # Reorganize parsed text to make a graph
             del parsed_text['count']
 
-            word_freq = {}
-            word_freq['c1'] = []
-            word_freq['c2'] = []
+            grammar = {}
+            grammar['c1'], grammar['c2'] = [], []
             for key in parsed_text.keys():
-                word_freq['c1'].append(key)
-                word_freq['c2'].append(len(parsed_text[key]))
+                grammar['c1'].append(key)
+                grammar['c2'].append(len(parsed_text[key]))
 
-            df = pd.DataFrame(word_freq)
-
+            # Format data to return a graph
+            df = pd.DataFrame(grammar)
+            specs = ['pie', 'Blues', df.keys()[0], df.keys()[1], 'Word', 
+                    'Type', 'Parsed Text Chart']
+            
             # Plot and return figure   
-            plot_url = grph.get_plot('pie', df, 'Blues', df.keys()[0], df.keys()[1], 
-                                    'Word', 'Frequency', 'Word Frequency Diagram') 
+            plot_url = grph.get_plot(df, specs) 
             plot = '<img class="img-responsive" src="data:image/png;base64,{}">'.format(plot_url)
 
-            return render_template("parse.html", graph_requested=True, plot=plot)
+            return render_template('parse.html', graph_requested=True, plot=plot)
     
         except:        
             return "Text could not be analyzed. Sorry."
 
-    else:
-        return "Something went wrong. Sorry."
  
 
 # -------------------------------------------------------------------------------------------------
@@ -124,16 +123,12 @@ def do_plot():
     df_html = df.to_html()
 
     # Get user selection
-    graph_type = request.form.get('graph-type')
-    xaxis = request.form.get('x-axis') or None
-    yaxis = request.form.get('y-axis') or None
-    color = request.form.get('color-scheme') or 'Greys'
+    specs = grph.get_graph_specs(request.form.to_dict())
 
     # Attempt to pass the user selection to graphing functions
     try:
         # Plot figure
-        plot_url = grph.get_plot(graph_type, df, color, xaxis, yaxis, 
-                            '', '', '')
+        plot_url = grph.get_plot(df, specs)
         plot = '<img class="img-responsive" src="data:image/png;base64,{}">'.format(plot_url)
     
         return render_template('graph.html', df_html=df_html, plot=plot,
@@ -169,37 +164,19 @@ def get_stats():
         mean, median, mode, stddev = None, None, None, None
 
         if request.form.get('mean'):
-            try:
-                mean = df[col].mean(axis=0)
-            except:
-                mean = 'Not calculable'
+           mean = stat.get_mean(df, col)
         
         if request.form.get('median'):
-            try:
-                median = df[col].median(axis=0)
-            except:
-                median = 'Not calculable'
+            median = stat.get_median(df, col)
 
         if request.form.get('mode'):
-            try:
-                mode = df[col].mode(axis=0)
-            except:
-                mode = 'Not calculable'
+            mode = stat.get_mode(df, col)
 
         if request.form.get('stddev'):
-            try:
-                stddev = df[col].std(axis=0)
-            except:
-                stddev = 'Not calculable'
+            stddev = stat.get_stddev(df, col)
 
         return render_template('stats.html', stats_requested=True, df_html=df_html,
                                 mean=mean, median=median, mode=mode, stddev=stddev)
-
-    # To implement
-    if 'form2-submit' in request.form:
-        return stats()
-    
-    return 'hello'
 
 # -------------------------------------------------------------------------------------------------
 # Microservice portion - return a graph to external application sending POST request
@@ -211,19 +188,14 @@ def http_graphs():
         try:
             # Get specifications from user
             data = request.get_json()
-            colors = data['colors']
-            graph_type = data['graph_type']
-            xaxis, yaxis = data['xaxis'], data['yaxis']
-            xlabel, ylabel = data['xlabel'], data['ylabel']
-            title = data['title']
+            specs = grph.get_graph_specs(data)
     
             # Convert JSON data to dataframe
             table = pd.io.json.json_normalize(data['table'])
             df = pd.DataFrame(table)
 
             # Create plot given specifications
-            plot = grph.get_plot(graph_type, df, colors, xaxis, yaxis,
-                                xlabel, ylabel, title)
+            plot = grph.get_plot(df, specs)
 
             # Make response
             response = app.response_class(

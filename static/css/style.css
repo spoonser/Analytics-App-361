@@ -201,14 +201,12 @@ input[type=number]::-webkit-outer-spin-button {
 #upload-box {
   background-color: #d8bfa5;
   padding: 20px;
-  border-radius: 25px;
   border: 2px solid #a18465;
 }
 
 #upload-portion {
   background-color: #e2d3c3;
   padding: 15px;
-  border-radius: 25px;
   border: 2px solid #ad9983;
   height: 450px;
   width: 750px;
@@ -216,12 +214,11 @@ input[type=number]::-webkit-outer-spin-button {
 
 #index-parse {
   background-color: #e2d3c3;
-  border-radius: 25px;
   padding: 15px;
   border: 2px solid #ad9983;
   position: absolute;
-  bottom: 150px;
+  bottom: 220px;
   width: 750px;
-  height: 190px;
+  height: 150px;
 }
 
